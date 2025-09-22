@@ -1,0 +1,10 @@
+project_id = "ylunudfubkqhhmchgrcd"
+
+[functions.generate-questions]
+verify_jwt = true
+
+[functions.interview-chat]
+verify_jwt = true
+
+[function]
+max_request_size = 524288  

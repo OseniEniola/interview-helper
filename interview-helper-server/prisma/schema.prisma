@@ -1,0 +1,84 @@
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Set in .env
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  displayName String?
+  avatarUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id       String             @id @default(uuid())
+  email    String             @unique
+  password String?
+  profile  Profile?
+  sessions InterviewSession[]
+}
+
+model InterviewSession {
+  id               String        @id @default(uuid())
+  userId           String
+  interview_title  String        @default("Untitled Interview")
+  job_role         String?
+  experience_level String?
+  jobDescription   String?
+  resumeUrl        String?
+  status           SessionStatus @default(SETUP)
+  currentQuestion  Int?          @default(0)
+  totalQuestions   Int?          @default(5)
+  startedAt        DateTime?
+  completedAt      DateTime?
+  isLiveCoding     Boolean       @default(false)
+  feedback         String?
+  score            Int?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  // Relations
+  user      User                @relation(fields: [userId], references: [id])
+  questions InterviewQuestion[]
+}
+
+model InterviewQuestion {
+  id                String       @id @default(uuid())
+  sessionId         String
+  questionText      String
+  questionType      QuestionType @default(BEHAVIORAL)
+  followup_question String?
+  followup_answer   String?
+  userAnswer        String?
+  aiFeedback        String?
+  tips              String?
+  score             Int?
+  timeSpent         Int?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  // Relations
+  session InterviewSession @relation(fields: [sessionId], references: [id])
+}
+
+// Enums
+enum SessionStatus {
+  SETUP
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum QuestionType {
+  TECHNICAL
+  BEHAVIORAL
+}

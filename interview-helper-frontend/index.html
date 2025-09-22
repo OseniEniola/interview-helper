@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>interview-avatar-match</title>
+  <meta name="description" content="AI Interview Simulator" />
+  <meta name="author" content="OseniEniola" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+
+  <meta property="og:title" content="interview-avatar-match" />
+  <meta property="og:description" content="AI Interview Simulator" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@OseniEniola" />
+  <meta name="twitter:image" content="" />
+
+  <style>
+    .blue-accent {
+      background-color: #3b82f6;
+    }
+
+    .copy-btn:hover {
+      background-color: #f3f4f6;
+    }
+
+    .tooltip {
+      visibility: hidden;
+      position: absolute;
+      background-color: #374151;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .copy-btn:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .copied-message {
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .copied-message.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>
