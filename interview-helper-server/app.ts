@@ -32,7 +32,7 @@ setupSwagger(app);
 // middleware
 app.use(
   cors({
-    origin: "http://localhost:8080",
+    origin: ["http://localhost:8080","http://13.217.253.74:8080/"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
