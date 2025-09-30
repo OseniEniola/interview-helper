@@ -47,13 +47,19 @@ export const createUploadMiddleware = (prefix: string = "") => {
         if (!session_id) {
           return cb(new Error("session_id is required"), "");
         }
-
-        const uploadPath = `uploads/interviews/${session_id}`;
+          // ✅ Always resolve relative to project root, not dist/
+        const uploadPath = path.join(
+          process.cwd(),
+          "uploads",
+          "interviews",
+          session_id
+        );
 
         if (!fs.existsSync(uploadPath)) {
           fs.mkdirSync(uploadPath, { recursive: true });
         }
-        cb(null, uploadPath);
+
+        cb(null, uploadPath)
       },
       filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);

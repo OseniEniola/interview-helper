@@ -58,7 +58,7 @@ Be encouraging but thorough in your evaluation.`;
     }
 
     const data = await response.json();
-    console.log("Session created:", data);
+    //console.log("Session created:", data);
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

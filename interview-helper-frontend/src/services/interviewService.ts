@@ -130,7 +130,7 @@ export class InterviewService {
    static async getSession(sessionId: string): Promise<InterviewSession> {
       try {
          const response = await axiosClient.get(`${baseUrl}/interview-sessions/${sessionId}`);
-         console.log(response)
+         //console.log(response)
          return response.data;
       } catch (error: any) {
          throw new Error(error.response?.data?.message || "Fetch sessions failed");

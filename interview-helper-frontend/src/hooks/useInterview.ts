@@ -187,7 +187,7 @@ export const useInterview = () => {
    const startInterview = async (id?: string) => {
       const sessionId = id || session?.id;
       if (!sessionId) return;
-      await InterviewService.updateSessionStatus(sessionId, "in_progress");
+      // await InterviewService.updateSessionStatus(sessionId, "in_progress");
       setSession((prev) => (prev ? { ...prev, status: "in_progress" } : null));
       console.log("Interview status updated to in_progress");
    };

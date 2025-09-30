@@ -172,7 +172,7 @@ router.get("/", authenticateJWT, async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
    }
 
-   console.log("Authenticated user:", req.user);
+   //console.log("Authenticated user:", req.user);
    const userId = req.user.id;
 
    try {

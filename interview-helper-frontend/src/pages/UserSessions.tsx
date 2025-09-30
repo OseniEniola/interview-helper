@@ -9,7 +9,7 @@ export const UserSessions = () => {
    useEffect(() => {
       const user = localStorage.getItem("userData");
       setUserData(user ? JSON.parse(user) : null);
-      console.log(user);
+      //console.log(user);
    }, []);
 
     useEffect(() => {   

@@ -26,7 +26,7 @@ const VoiceAnalysis: React.FC<VoiceAnalysisProps> = ({
   const chatRef = useRef<RealtimeChat | null>(null);
 
   const handleMessage = (event: any) => {
-    console.log('Received message:', event);
+    //console.log('Received message:', event);
     
     setMessages(prev => [...prev, event]);
     

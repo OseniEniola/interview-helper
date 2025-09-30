@@ -71,11 +71,10 @@ router.post("/generate-followup", async (req: Request, res: Response) => {
 
       let userAnswer;
       if (interviewQuestion?.userAnswer) {
-         const filePath = path.join(__dirname, "..", interviewQuestion.userAnswer);
+         const filePath = interviewQuestion.userAnswer;
          userAnswer = await transcribeAudioToText(filePath);
       }
 
-      console.log(userAnswer)
       if (!userAnswer) throw Error("User answer is required");
       const followupPrompt = `You are a professional interviewer.
 Based on the following audio recorded answer to the question "${interviewQuestion?.questionText}", generate a natural follow-up question to probe deeper.
@@ -97,7 +96,6 @@ Return only the follow-up question.`;
             temperature: 0.7,
          }),
       });
-
 
       if (!followupRes.ok) throw new Error("Failed to generate follow-up question");
 
@@ -185,7 +183,7 @@ router.post("/evaluate-answer", authenticateJWT, async (req, res) => {
    if (interviewQuestion?.userAnswer) {
       const filePath = path.join(__dirname, "..", interviewQuestion?.userAnswer);
       //let audio = fs.readFileSync(filePath);
-      userAnswer = await transcribeAudioToText(filePath);
+      userAnswer = await transcribeAudioToText(interviewQuestion?.userAnswer);
    }
 
    if (!userAnswer) throw Error("User answer is required");
@@ -195,7 +193,7 @@ router.post("/evaluate-answer", authenticateJWT, async (req, res) => {
       const filePath = path.join(__dirname, "..", interviewQuestion?.followup_answer);
       // followupAnswer = fs.readFileSync(filePath);
       //let audio = fs.readFileSync(filePath);
-      followupAnswer = await transcribeAudioToText(filePath);
+      followupAnswer = await transcribeAudioToText(interviewQuestion?.followup_answer);
    }
 
    if (!userAnswer) throw Error("User answer is required");
@@ -208,18 +206,20 @@ router.post("/evaluate-answer", authenticateJWT, async (req, res) => {
    const openaiApiKey = process.env.OPENAI_API_KEY;
    if (!openaiApiKey) throw new Error("OpenAI API key not configured");
 
-   const evaluationPrompt = `Evaluate the following interview exchange based on the original and follow-up answers(the answers are recorded audio response).
-Question: ${questionText}
-Follow-up Question: ${followupQuestionText}
-Candidate's First Answer: ${userAnswer}
-Candidate's Follow-up Answer: ${followupAnswer}
-Job Role: ${jobRole}
-Experience Level: ${experienceLevel}
+   const evaluationPrompt = `Evaluate the following interview exchange based on the original and follow-up answers(the answers are recorded audio which were transcribed to text response).
+Question: "${questionText}",
+Follow-up Question: "${followupQuestionText}",
+Candidate's First Answer: "${userAnswer}",
+Candidate's Follow-up Answer: "${followupAnswer}",
+Job Role: "${jobRole}",
+Experience Level: "${experienceLevel}"
+--------------------
 Evaluation criteria:
 1. CONTENT QUALITY (40%)
 2. VOICE TONE & CONFIDENCE (20%)
 3. SPEAKING CLARITY (20%)
 4. THOUGHT ORGANIZATION (20%)
+----------------------
 Return JSON:
 { "score": 8, "feedback": "Your detailed feedback here" }. NB: For the feedback property let it me a string in html format. After giving the feedback for the places of improvement also provide example response to clarify your recommendations`;
 
@@ -246,15 +246,15 @@ Return JSON:
    try {
       evaluation = JSON.parse(evalData.choices[0].message.content);
       await prismaClient.interviewQuestion.update({
-         where:{
-            id:question_id,
-            sessionId: session_id
+         where: {
+            id: question_id,
+            sessionId: session_id,
          },
-         data:{
+         data: {
             score: evaluation.score,
-            aiFeedback: evaluation.feedback
-         }
-      })
+            aiFeedback: evaluation.feedback,
+         },
+      });
    } catch {
       evaluation = {
          score: 6,
@@ -276,18 +276,18 @@ router.post("/submit-coding-answer", authenticateJWT, async (req, res) => {
       where: {
          id: question_id,
          sessionId: session_id,
-      },include:{
-         session:true
-      }
-
+      },
+      include: {
+         session: true,
+      },
    });
 
-   if(!interviewQuestion) throw Error("Interview question not found");
+   if (!interviewQuestion) throw Error("Interview question not found");
 
    const updatedQuestion = await prismaClient.interviewQuestion.update({
-      where:{sessionId: session_id, id: question_id},
-      data:{userAnswer:code_snippet}
-   })
+      where: { sessionId: session_id, id: question_id },
+      data: { userAnswer: code_snippet },
+   });
 
    const questionText = interviewQuestion?.questionText;
    const jobRole = interviewQuestion?.session.job_role;
@@ -365,20 +365,20 @@ Guidelines:
       evaluation = JSON.parse(evalData.choices[0].message.content);
 
       await prismaClient.interviewQuestion.update({
-         where:{
-            id:question_id,
-            sessionId: session_id
+         where: {
+            id: question_id,
+            sessionId: session_id,
          },
-         data:{
+         data: {
             score: evaluation.score,
-            aiFeedback: evaluation.feedback
-         }
-      })
+            aiFeedback: evaluation.feedback,
+         },
+      });
       /* console.log("Eval data", evaluation)
       console.log("Evaluation score", evaluation.score)
       console.log("Eval feedback", evaluation.feedback) */
-   } catch (err){
-      console.error(err)
+   } catch (err) {
+      console.error(err);
       evaluation = {
          score: 6,
          feedback: "Thanks for your answers. Try to include specific examples and communicate more clearly next time.",
@@ -387,7 +387,6 @@ Guidelines:
 
    return res.json({ feedback: evaluation.feedback, score: evaluation.score, message: "Evaluation complete" });
 });
-
 
 /**
  * @openapi
@@ -485,6 +484,7 @@ router.post("/save-first-answer", authenticateJWT, createUploadMiddleware("main_
    const { question_id, session_id } = req.body;
    const filePath = req.file?.path;
 
+   console.log(filePath);
    // Example: save to DB
    const interview = await prismaClient.interviewQuestion.update({
       where: { id: question_id, sessionId: session_id },
