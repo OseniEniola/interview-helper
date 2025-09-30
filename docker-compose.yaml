@@ -28,9 +28,10 @@ services:
       - "${BACKEND_PORT:-3000}:3000"
     command: sh -c "npx prisma migrate deploy && node dist/bin/www.js"
       # If your start script differs, change the command above.
-    volumes:
-      - ./interview-helper-server:/usr/src/backend:cached
-      - /usr/src/backend/node_modules
+    #volumes:
+      #- ./interview-helper-server:/usr/src/backend:cached
+      #- /usr/src/backend/node_modules
+      #- ./uploads:/usr/src/backend/uploads
 
   frontend:
     build:
@@ -43,9 +44,9 @@ services:
       - "${FRONTEND_PORT:-8080}:80"
     environment:
       REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:-http://localhost:3000}
-    volumes:
-      - ./interview-helper-frontend:/usr/src/frontend:cached
-      - /usr/src/frontend/node_modules
+    #volumes:
+     # - ./interview-helper-frontend:/usr/src/frontend:cached
+     # - /usr/src/frontend/node_modules
 
 volumes:
   db_data:

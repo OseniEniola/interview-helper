@@ -109,6 +109,7 @@ export const useInterview = () => {
       if (!session) return;
 
       setIsLoading(true);
+      setIsGeneratingFeedback(true);
       try {
          let body = {
             session_id: session.id,
@@ -116,7 +117,7 @@ export const useInterview = () => {
             code_snippet: codeSnippet
          }
          const result = await InterviewService.submitCodingAnswer(body);
-
+         setIsGeneratingFeedback(false);
          // Update the question with feedback
          setFeedback(result);
 
@@ -128,6 +129,8 @@ export const useInterview = () => {
          return result;
       } catch (error) {
          console.error("Error submitting code:", error);
+         setIsGeneratingFeedback(false);
+         setIsLoading(false)
          toast({
             title: "Error",
             description: "Failed to submit code",

@@ -299,10 +299,10 @@ router.post("/submit-coding-answer", authenticateJWT, async (req, res) => {
 
    const evaluationPrompt = `You are an expert interviewer. Evaluate the following candidate's solution to a Data Structures & Algorithms (DSA) coding question.
 
-Question: ${questionText}
-Candidate's Code Answer: ${updatedQuestion.userAnswer}
+Question: ${questionText},
+Candidate's Code Answer: "${updatedQuestion.userAnswer}",
 
-Job Role: ${jobRole}
+Job Role: ${jobRole},
 Experience Level: ${experienceLevel}
 
 Evaluation criteria (weight in parentheses):
@@ -374,9 +374,9 @@ Guidelines:
             aiFeedback: evaluation.feedback
          }
       })
-      console.log("Eval data", evaluation)
+      /* console.log("Eval data", evaluation)
       console.log("Evaluation score", evaluation.score)
-      console.log("Eval feedback", evaluation.feedback)
+      console.log("Eval feedback", evaluation.feedback) */
    } catch (err){
       console.error(err)
       evaluation = {

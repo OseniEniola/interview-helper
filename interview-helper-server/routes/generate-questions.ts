@@ -60,8 +60,8 @@ router.post("/:sessionId", authenticateJWT, async (req: Request, res: Response) 
 
       if (!session.resumeUrl) {
          resumeContent = "";
-      } else if (session.resumeUrl.startsWith("uploads/")) {
-         const filePath = path.join(process.cwd(), "..", session.resumeUrl);
+      } else if (session.resumeUrl.startsWith("/uploads/")) {
+         const filePath = path.join(process.cwd(), session.resumeUrl);
          //const filePath = path.join(__dirname, "..", session.resumeUrl);
 
          if (filePath.endsWith(".pdf")) {

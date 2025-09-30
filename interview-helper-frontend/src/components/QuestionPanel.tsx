@@ -196,6 +196,7 @@ export function QuestionPanel({ onNext,editorContent, numOfGenQuestions, isLast 
          const result = await submitCodingAnswer(editorContent);
          setFeedback(result);
          setHasSubmitted(true);
+         resetTimer()
       } catch (error) {
          console.error("Error submitting coding answer:", error);
       } finally {
@@ -276,7 +277,22 @@ export function QuestionPanel({ onNext,editorContent, numOfGenQuestions, isLast 
                            Start
                         </Button>{" "}
                         <Button variant="outline" size="sm" onClick={handleSubmitCodingAnswer} className="w-full mt-4">
-                           Submit
+                            {isSubmitting ? (
+                           <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                              Submitting...
+                           </>
+                        ) : hasSubmitted ? (
+                           <>
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Submitted
+                           </>
+                        ) : (
+                           <>
+                              <Send className="h-4 w-4 mr-2" />
+                              Submit Answer
+                           </>
+                        )}
                         </Button>
                      </div>
                   ) : (

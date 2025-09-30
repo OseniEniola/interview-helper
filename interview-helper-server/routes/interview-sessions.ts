@@ -102,14 +102,14 @@ router.post("/", authenticateJWT, async (req: any, res: Response) => {
       return res.status(400).json({ message: "jobDescription and experienceLevel are required" });
     }
 
-    console.log(isLiveCoding,typeof isLiveCoding)
+
     const session: InterviewSession = {
       interview_title,
       job_role,
       userId,
       jobDescription,
       experience_level,
-      resumeUrl: file.path,  // multer saved file path
+      resumeUrl: `/uploads/resumes/${userId}/${file.filename}`, //file.path,  // multer saved file path
       currentQuestion: 1,
       isLiveCoding:  isLiveCoding.toLowerCase() === 'true' || isLiveCoding.toLowerCase() === true ? true : false,
       totalQuestions: parseInt(number_questions) || 5,
