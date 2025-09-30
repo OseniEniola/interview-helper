@@ -36,8 +36,8 @@ const Auth = () => {
          if (error) throw error;
 
          toast({
-            title: "Check your email",
-            description: "We've sent you a confirmation link.",
+            title: "Sign up successful",
+            description: "Proceed to login",
          });
       } catch (error: any) {
          toast({
