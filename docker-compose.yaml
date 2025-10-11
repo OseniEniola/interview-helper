@@ -42,8 +42,8 @@ services:
       PGADMIN_SERVER_MODE: "True"
       PGADMIN_LISTEN_PORT: 80
       PGADMIN_SCRIPT_NAME: "/youcantseeme"
-    ports:
-      - "8080:80"
+    expose:
+      - "80"   # DO NOT expose host port; nginx will route
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
