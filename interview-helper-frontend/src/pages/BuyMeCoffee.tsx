@@ -1,3 +1,5 @@
+import { Brain } from "lucide-react";
+
 const BuyMeCoffee = () => {
     
 
@@ -14,7 +16,14 @@ const BuyMeCoffee = () => {
     }
    return (
       <div>
-         <div className="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+         <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-4">
+             <div className="text-center mb-5">
+               <a  href="/interview/sessions" className="flex cursor-pointer items-center justify-center gap-2 mb-1">
+                  <Brain className="h-8 w-8 text-indigo-600" />
+                  <h1 className="text-xl font-bold text-gray-900">AI Interview Simulator</h1>
+               </a>
+               <p className="text-xs text-gray-600">Practice with AI-powered interview questions</p>
+            </div>
             <div className="max-w-2xl w-full bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                {/*     <!-- Header --> */}{" "}
                <div className="p-6 text-center">

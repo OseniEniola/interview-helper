@@ -37,7 +37,7 @@ export function InterviewSetup() {
       jobRole: "",
       experienceLevel: "",
       numberQuestions: 5,
-      isCodingAssesment: false
+      isCodingAssesment: false,
    });
 
    const handleFileUpload = (type: "resume" | "jobDescription", content: string, file?: File) => {
@@ -66,7 +66,7 @@ export function InterviewSetup() {
             resume_file: setupForm.resumeFile,
             job_description: setupForm.jobDescription,
             number_questions: setupForm.numberQuestions,
-            isLiveCoding: setupForm.isCodingAssesment
+            isLiveCoding: setupForm.isCodingAssesment,
          });
          await startInterview(session.id).then(() => {
             navigate(`/interview/${session.id}`);
@@ -124,12 +124,33 @@ export function InterviewSetup() {
                      </div>
                      <div>
                         <Label htmlFor="numberQuestions">Number of Questions</Label>
-                        <Input disabled={setupForm.isCodingAssesment} id="numberQuestions" type="number" placeholder="e.g., 5r" value={setupForm.numberQuestions} onChange={(e) => setSetupForm((prev) => ({ ...prev, numberQuestions: parseInt(e.target.value) }))} />
+                        <Input
+                           type="number"
+                           id="numberQuestions"
+                           placeholder="e.g., 5"
+                           disabled={setupForm.isCodingAssesment}
+                           value={setupForm.numberQuestions}
+                           max={6}
+                           onChange={(e) => {
+                              const value = parseInt(e.target.value, 10);
+
+                              // Only update if it's a number and less than or equal to 6
+                              if (!isNaN(value)) {
+                                 setSetupForm((prev) => ({
+                                    ...prev,
+                                    numberQuestions: value > 6 ? 6 : value,
+                                 }));
+                              } else {
+                                 // Handle empty input (if user deletes)
+                                 setSetupForm((prev) => ({...prev,numberQuestions: NaN,}));
+                              }
+                           }}
+                        />
                      </div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-4">
                      <div className="flex items-center gap-2">
-                        <Input className="w-3" id="isCodingAssesment" type="checkbox" checked={setupForm.isCodingAssesment} onChange={(e) => setSetupForm((prev) => ({ ...prev, numberQuestions: 1,isCodingAssesment: e.target.checked }))} />
+                        <Input className="w-3" id="isCodingAssesment" type="checkbox" checked={setupForm.isCodingAssesment} onChange={(e) => setSetupForm((prev) => ({ ...prev, numberQuestions: 1, isCodingAssesment: e.target.checked }))} />
                         <Label htmlFor="numberQuestions">Setup live coding assessment</Label>
                      </div>
                   </div>

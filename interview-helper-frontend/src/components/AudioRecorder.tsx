@@ -5,8 +5,8 @@ import { Mic, MicOff, Volume2 } from "lucide-react";
 import { AudioRecorder as AudioRecorderUtil } from "@/utils/audioRecorder";
 import { useInterviewContext } from "@/hooks/useInterviewContext";
 
-export default function AudioRecorder({ startTimer, resetTimer,hasSubmitted }) {
-   const { saveRecordedAnswer, saveFollowupRecordedAnswer,generateFollowupQuestion,setFeedback, evaluateResponse, session, currentQuestion } = useInterviewContext();
+export default function AudioRecorder({ startTimer, resetTimer, hasSubmitted }) {
+   const { saveRecordedAnswer, saveFollowupRecordedAnswer, generateFollowupQuestion, setFeedback, evaluateResponse, session, currentQuestion } = useInterviewContext();
 
    const [isConnected, setIsConnected] = useState(false);
    const recordRef = useRef<AudioRecorderUtil | null>(null);
@@ -39,6 +39,12 @@ export default function AudioRecorder({ startTimer, resetTimer,hasSubmitted }) {
       }
    }, [audioBlob]);
 
+   useEffect(() => {
+      if(!currentQuestion) return;
+      currentQuestion.followup_question ? 
+      setIsFollowupGenerated(true) : setIsFollowupGenerated(false);
+   }, [currentQuestion]);
+
    const startRecording = async () => {
       try {
          await recordRef.current?.startRecording();
@@ -69,7 +75,7 @@ export default function AudioRecorder({ startTimer, resetTimer,hasSubmitted }) {
       const followupQuestion = await generateFollowupQuestion(session.id, currentQuestion.id);
       // console.log("Generated follow-up:", followupQuestion);
 
-      setIsFollowupGenerated(true)
+      setIsFollowupGenerated(true);
       resetTimer();
    };
 
@@ -84,8 +90,8 @@ export default function AudioRecorder({ startTimer, resetTimer,hasSubmitted }) {
       const evaluatedResponse = await evaluateResponse(session.id, currentQuestion.id);
 
       //console.log(evaluatedResponse)
-      setFeedback(evaluatedResponse)
-      hasSubmitted(true)
+      setFeedback(evaluatedResponse);
+      hasSubmitted(true);
    };
    return (
       <Card className="w-full">
@@ -118,7 +124,7 @@ export default function AudioRecorder({ startTimer, resetTimer,hasSubmitted }) {
                   )}
                </div>
 
-              {/*  {feedback && (
+               {/*  {feedback && (
                   <div className="mt-4 p-4 bg-muted rounded-lg">
                      <h4 className="font-medium mb-2">Live Feedback:</h4>
                      <p className="text-sm">{feedback}</p>

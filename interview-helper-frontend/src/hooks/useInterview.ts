@@ -213,8 +213,15 @@ export const useInterview = () => {
     const evaluateResponse = async (session_id,question_id):Promise<any> => {
       if (!session) return;
       setIsGeneratingFeedback(true);
-      const response =await InterviewService.evaluateAnswers(session_id,question_id).then (res=>{
+      const response = await InterviewService.evaluateAnswers(session_id,question_id).then (res=>{
          setIsGeneratingFeedback(false);
+         if(questions.length != currentQuestionIndex){
+            toast({
+            title: "Info",
+            description: "You may proceed to next question",
+            variant: "default",
+         });
+         }
          return res
       }).catch(err=>{
          setIsGeneratingFeedback(false);

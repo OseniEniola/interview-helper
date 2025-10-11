@@ -10,6 +10,7 @@ import AudioRecorder from "./AudioRecorder";
 import { useInterviewContext } from "@/hooks/useInterviewContext";
 import { Skeleton } from "./ui/skeleton";
 import Spinner from "./ui/spinner";
+import { useNavigate } from "react-router-dom";
 
 interface QuestionPanelProps {
    numOfGenQuestions?: number;
@@ -77,7 +78,7 @@ const sampleQuestions = [
    },
 ];
 
-export function QuestionPanel({ onNext,editorContent, numOfGenQuestions, isLast }: QuestionPanelProps) {
+export function QuestionPanel({ onNext, editorContent, numOfGenQuestions, isLast }: QuestionPanelProps) {
    const [timeLeft, setTimeLeft] = useState(0);
    const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
 
@@ -87,12 +88,14 @@ export function QuestionPanel({ onNext,editorContent, numOfGenQuestions, isLast 
    const [isSubmitting, setIsSubmitting] = useState(false);
    const [hasSubmitted, setHasSubmitted] = useState(false);
 
-   const {currentQuestion,currentQuestionIndex ,feedback,setFeedback,submitCodingAnswer,submitAnswer, followupQuestion, setFollowupQuestion, isGeneratingFollowup, session } = useInterviewContext();
-
+   const { currentQuestion, currentQuestionIndex, feedback, setFeedback, submitCodingAnswer, submitAnswer, followupQuestion, setFollowupQuestion, isGeneratingFollowup, session } = useInterviewContext();
 
    const question = currentQuestion || sampleQuestions[currentQuestionIndex || 0];
 
 
+   const navigate = useNavigate();
+   
+   
    try {
       if (typeof question.tips === "string") {
          question.tips = JSON.parse(question.tips);
@@ -103,12 +106,12 @@ export function QuestionPanel({ onNext,editorContent, numOfGenQuestions, isLast 
       question.tips = [];
    }
 
-   useEffect   (() => {
-      setTimeout(()=> {
-         if(!isTimerRunning){
-            handleStart()
+   useEffect(() => {
+      setTimeout(() => {
+         if (!isTimerRunning) {
+            handleStart();
          }
-      },5000)
+      }, 5000);
    }, []);
 
    // Optional: Set initial time when question changes (but don’t start timer yet)
@@ -127,7 +130,6 @@ export function QuestionPanel({ onNext,editorContent, numOfGenQuestions, isLast 
          }
       }
    }, [currentQuestion, question]);
-
 
    //Reset Timer
    const resetTimer = () => {
@@ -168,10 +170,14 @@ export function QuestionPanel({ onNext,editorContent, numOfGenQuestions, isLast 
    };
 
    const handleNext = () => {
-      setAnswer("");
+      if(!isLast){
+         setAnswer("");
       setFeedback(null);
       setHasSubmitted(false);
       onNext();
+      }else{
+         navigate("/buy-me-coffee");
+      }
    };
 
    const handleSubmitAnswer = async () => {
@@ -192,11 +198,10 @@ export function QuestionPanel({ onNext,editorContent, numOfGenQuestions, isLast 
    const handleSubmitCodingAnswer = async () => {
       setIsSubmitting(true);
       try {
-         
          const result = await submitCodingAnswer(editorContent);
          setFeedback(result);
          setHasSubmitted(true);
-         resetTimer()
+         resetTimer();
       } catch (error) {
          console.error("Error submitting coding answer:", error);
       } finally {
@@ -251,10 +256,12 @@ export function QuestionPanel({ onNext,editorContent, numOfGenQuestions, isLast 
             <CardContent className="p-4">
                <div className="space-y-4">
                   {/* Timer Display */}
-                  <div className="text-center">
-                     <div className={cn("text-3xl font-bold mb-2", isTimeCritical ? "text-destructive" : isTimeWarning ? "text-warning" : "text-foreground")}>{formatTime(timeLeft)}</div>
-                     <Progress value={progressValue} className={cn("h-2", isTimeCritical && "[&>div]:bg-destructive", isTimeWarning && "[&>div]:bg-warning")} />
-                  </div>
+                  {!currentQuestion.aiFeedback && (
+                     <div className="text-center">
+                        <div className={cn("text-3xl font-bold mb-2", isTimeCritical ? "text-destructive" : isTimeWarning ? "text-warning" : "text-foreground")}>{formatTime(timeLeft)}</div>
+                        <Progress value={progressValue} className={cn("h-2", isTimeCritical && "[&>div]:bg-destructive", isTimeWarning && "[&>div]:bg-warning")} />
+                     </div>
+                  )}
 
                   {/* Voice Analysis */}
                   {/*  <VoiceAnalysis
@@ -269,30 +276,30 @@ export function QuestionPanel({ onNext,editorContent, numOfGenQuestions, isLast 
                   /> */}
 
                   {/* Record Answer */}
-                  {!session.isLiveCoding && <AudioRecorder resetTimer={resetTimer} hasSubmitted={setHasSubmitted} startTimer={setIsTimerRunning} />}
+                  {!session.isLiveCoding && !currentQuestion.aiFeedback && <AudioRecorder resetTimer={resetTimer} hasSubmitted={setHasSubmitted} startTimer={setIsTimerRunning} />}
 
                   {session.isLiveCoding ? (
                      <div className="flex flex-col md:flex-row gap-2">
-                        <Button  variant="outline" size="sm" onClick={handleStart} className="w-full mt-4">
+                        <Button variant="outline" size="sm" onClick={handleStart} className="w-full mt-4">
                            Start
                         </Button>{" "}
                         <Button variant="outline" size="sm" onClick={handleSubmitCodingAnswer} className="w-full mt-4">
-                            {isSubmitting ? (
-                           <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                              Submitting...
-                           </>
-                        ) : hasSubmitted ? (
-                           <>
-                              <CheckCircle className="h-4 w-4 mr-2" />
-                              Submitted
-                           </>
-                        ) : (
-                           <>
-                              <Send className="h-4 w-4 mr-2" />
-                              Submit Answer
-                           </>
-                        )}
+                           {isSubmitting ? (
+                              <>
+                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                                 Submitting...
+                              </>
+                           ) : hasSubmitted ? (
+                              <>
+                                 <CheckCircle className="h-4 w-4 mr-2" />
+                                 Submitted
+                              </>
+                           ) : (
+                              <>
+                                 <Send className="h-4 w-4 mr-2" />
+                                 Submit Answer
+                              </>
+                           )}
                         </Button>
                      </div>
                   ) : (

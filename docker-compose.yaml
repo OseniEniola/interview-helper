@@ -32,6 +32,19 @@ services:
       #- ./interview-helper-server:/usr/src/backend:cached
       #- /usr/src/backend/node_modules
       #- ./uploads:/usr/src/backend/uploads
+  
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - db
 
   frontend:
     build:
@@ -51,3 +64,4 @@ services:
 
 volumes:
   db_data:
+  pgadmin_data:
