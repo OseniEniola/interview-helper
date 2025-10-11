@@ -206,22 +206,65 @@ router.post("/evaluate-answer", authenticateJWT, async (req, res) => {
    const openaiApiKey = process.env.OPENAI_API_KEY;
    if (!openaiApiKey) throw new Error("OpenAI API key not configured");
 
-   const evaluationPrompt = `Evaluate the following interview exchange based on the original and follow-up answers(the answers are recorded audio which were transcribed to text response).
-Question: "${questionText}",
-Follow-up Question: "${followupQuestionText}",
-Candidate's First Answer: "${userAnswer}",
-Candidate's Follow-up Answer: "${followupAnswer}",
-Job Role: "${jobRole}",
+const evaluationPrompt = `You are an impartial senior technical interviewer. Evaluate the candidate's performance **strictly and analytically** using the criteria below.
+
+Each score category must be judged independently and proportionally, and the **final score (out of 10)** must reflect a weighted average of all criteria with NO rounding up.
+
+--------------------
+**Interview Context**
+Question: "${questionText}"
+Follow-up Question: "${followupQuestionText}"
+Candidate's First Answer (transcribed): "${userAnswer}"
+Candidate's Follow-up Answer (transcribed): "${followupAnswer}"
+Job Role: "${jobRole}"
 Experience Level: "${experienceLevel}"
 --------------------
-Evaluation criteria:
-1. CONTENT QUALITY (40%)
-2. VOICE TONE & CONFIDENCE (20%)
-3. SPEAKING CLARITY (20%)
-4. THOUGHT ORGANIZATION (20%)
-----------------------
-Return JSON:
-{ "score": 8, "feedback": "Your detailed feedback here" }. NB: For the feedback property let it me a string in html format. After giving the feedback for the places of improvement also provide example response to clarify your recommendations`;
+
+**Evaluation Criteria (Total = 10 points)**
+1. **Content Quality (4 points)** — Accuracy, relevance, and completeness of information.  
+   - 0–1: Largely incorrect or incomplete  
+   - 2: Partially correct, missing key points  
+   - 3: Mostly correct, lacks depth  
+   - 4: Excellent depth and correctness
+
+2. **Voice Tone & Confidence (2 points)** — Assertiveness, natural delivery, and engagement.  
+   - 0: Hesitant, monotone, unsure  
+   - 1: Some confidence but uneven tone  
+   - 2: Clear confidence and steady tone
+
+3. **Speaking Clarity (2 points)** — Fluency, pace, and ease of understanding.  
+   - 0: Hard to follow or disorganized speech  
+   - 1: Minor clarity issues  
+   - 2: Very clear and coherent
+
+4. **Thought Organization (2 points)** — Logical structure, flow, and ability to connect ideas.  
+   - 0: Disorganized or confusing  
+   - 1: Some structure but lacks cohesion  
+   - 2: Well-organized and cohesive
+
+--------------------
+**Instructions**
+- Be **critical and objective**, not lenient.  
+- Do not inflate scores for average responses.  
+- Penalize vagueness, lack of clarity, filler words, or redundancy.  
+- If the candidate's answers are weak or unclear, assign a **low score (≤5)**.
+- Provide feedback in **well-structured HTML** that uses semantic tags for readability.
+
+**HTML Feedback Format Requirements:**
+- Use headings \`<h3>\` for each evaluation category.  
+- Use \`<ul>\` and \`<li>\` for listing strengths and areas for improvement.  
+- Use \`<p>\` for short descriptive explanations.  
+- Use \`<strong>\` to highlight key points.  
+- Include a separate \`<section>\` titled **"Example of Improved Answer"** with a short, ideal example response.  
+- Make the HTML visually clear and ready to render with \`innerHTML\`.
+
+--------------------
+**Output Format (JSON only)**
+{
+  "score": 0–10,
+  "feedback": "<div>Well-formatted HTML feedback here</div>"
+}
+`;
 
    const evalRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -480,17 +523,43 @@ router.post("/save-followup-answer", authenticateJWT, createUploadMiddleware("fo
  *         description: Internal server error
  */
 // Route to save first answer
-router.post("/save-first-answer", authenticateJWT, createUploadMiddleware("main_question_ans"), async (req, res) => {
-   const { question_id, session_id } = req.body;
-   const filePath = req.file?.path;
+router.post(
+  "/save-first-answer",
+  authenticateJWT,
+  createUploadMiddleware("main_question_ans"),
+  async (req, res) => {
+    try {
+      const { question_id, session_id } = req.body;
+      const filePath = req.file?.path;
 
-   console.log(filePath);
-   // Example: save to DB
-   const interview = await prismaClient.interviewQuestion.update({
-      where: { id: question_id, sessionId: session_id },
-      data: { userAnswer: filePath },
-   });
+      if (!question_id || !session_id) {
+        return res.status(400).json({ success: false, message: "Missing question_id or session_id" });
+      }
 
-   res.json({ success: true, interview });
-});
+      if (!filePath) {
+        return res.status(400).json({ success: false, message: "No file uploaded" });
+      }
+
+      // ✅ Update interview answer safely
+      const interview = await prismaClient.interviewQuestion.updateMany({
+        where: { id: question_id, sessionId: session_id },
+        data: { userAnswer: filePath },
+      });
+
+      if (interview.count === 0) {
+        return res.status(404).json({ success: false, message: "Interview question not found" });
+      }
+
+      return res.json({
+        success: true,
+        message: "Answer saved successfully",
+        data: { filePath },
+      });
+    } catch (error) {
+      console.error("Error saving answer:", error);
+      return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+  }
+);
+
 export default router;

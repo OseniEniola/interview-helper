@@ -9,7 +9,6 @@ export const dynamicResumeUpload = (folderParam: string) => {
          // Default to "uploads/resumes" if no param is passed
          const targetFolder = path.join(process.cwd(), folderParam || "uploads/resumes");
         // const targetFolder = folderParam || "uploads/resumes";
-
          // Ensure folder exists
          if (!fs.existsSync(targetFolder)) {
             fs.mkdirSync(targetFolder, { recursive: true });

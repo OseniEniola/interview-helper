@@ -84,8 +84,8 @@ router.post("/:sessionId", authenticateJWT, async (req: Request, res: Response) 
       const openaiApiKey = process.env.OPENAI_API_KEY;
       if (!openaiApiKey) throw new Error("OpenAI API key not configured");
 
+      console.log(`Generating ${ session.totalQuestions} questions for:`, { jobRole, experienceLevel, resumeContent: resumeContent ? "Provided" : "Not provided", jobDescription: session.jobDescription });
       // Create prompt
-
 const liveCodingPrompt = `Generate ${session.totalQuestions} live coding DSA(FAANG Style) interview questions for a ${jobRole} position with ${experienceLevel} experience level.
 
 Resume context: ${resumeContent || "No resume provided"}
@@ -116,7 +116,9 @@ Guidelines:
 - Vary difficulty (easy, medium, hard).
 - Ensure each question has at least 2 test cases in tips.;`;
 
-const mixedInterviewPrompt = `Generate ${session.totalQuestions} technical and behavioral interview questions each for a ${jobRole} position with ${experienceLevel} experience level. 
+const mixedInterviewPrompt = `Generate **exactly ${session.totalQuestions}** interview questions for a ${jobRole} position with ${experienceLevel} experience level.
+
+Distribute them as a mix of technical and behavioral questions (technical should be slightly more than behavioral).
 
 Resume context: ${resumeContent || "No resume provided"}
 Job Description: ${session.jobDescription || "No description provided"}
@@ -133,7 +135,7 @@ Return a JSON array with this structure:
   }
 ]
 
-Make questions relevant to the role and experience level. Mix technical and behavioral questions appropriately.`;
+Make questions relevant to the role and experience level.And ensure each question has at least 2 tips.`;
 
       // Call OpenAI API
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
