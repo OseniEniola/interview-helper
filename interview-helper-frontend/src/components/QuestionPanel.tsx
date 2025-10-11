@@ -92,10 +92,8 @@ export function QuestionPanel({ onNext, editorContent, numOfGenQuestions, isLast
 
    const question = currentQuestion || sampleQuestions[currentQuestionIndex || 0];
 
-
    const navigate = useNavigate();
-   
-   
+
    try {
       if (typeof question.tips === "string") {
          question.tips = JSON.parse(question.tips);
@@ -170,12 +168,13 @@ export function QuestionPanel({ onNext, editorContent, numOfGenQuestions, isLast
    };
 
    const handleNext = () => {
-      if(!isLast){
+      if (!isLast) {
          setAnswer("");
-      setFeedback(null);
-      setHasSubmitted(false);
-      onNext();
-      }else{
+         setFeedback(null);
+         setHasSubmitted(false);
+         setFollowupQuestion("")
+         onNext();
+      } else {
          navigate("/buy-me-coffee");
       }
    };
@@ -229,7 +228,7 @@ export function QuestionPanel({ onNext, editorContent, numOfGenQuestions, isLast
                </div>
             </CardHeader>
             <CardContent>
-               <p className="text-foreground leading-relaxed">{question.questionText}</p>
+               <p className="text-foreground leading-relaxed text-sm">{question.questionText}</p>
             </CardContent>
          </Card>
 
@@ -246,7 +245,7 @@ export function QuestionPanel({ onNext, editorContent, numOfGenQuestions, isLast
                   </div>
                </CardHeader>
                <CardContent>
-                  <p className="text-foreground leading-relaxed">{followupQuestion}</p>
+                  <p className="text-foreground leading-relaxed text-sm">{followupQuestion}</p>
                </CardContent>
             </Card>
          )}

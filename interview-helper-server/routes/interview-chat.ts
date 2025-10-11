@@ -76,10 +76,24 @@ router.post("/generate-followup", async (req: Request, res: Response) => {
       }
 
       if (!userAnswer) throw Error("User answer is required");
-      const followupPrompt = `You are a professional interviewer.
-Based on the following audio recorded answer to the question "${interviewQuestion?.questionText}", generate a natural follow-up question to probe deeper.
-Answer: ${userAnswer}
-Return only the follow-up question.`;
+
+
+const followupPrompt = `
+You are a professional technical interviewer. 
+
+Based on the candidate's answer to the interview question below, generate a natural and relevant follow-up question that probes deeper, explores their reasoning, problem-solving approach, or understanding of key concepts. 
+
+Original Question: "${interviewQuestion?.questionText}"
+
+Candidate's Answer: "${userAnswer}"
+
+Guidelines:
+1. Return **only the follow-up question** as a single sentence or short paragraph.
+2. The follow-up should encourage elaboration, clarification, or demonstration of depth.
+3. Avoid repeating the original question.
+4. Ensure the question is relevant to the context of the original question and the candidate’s answer.
+5. Keep it concise and professional.
+`;  
 
       const followupRes = await fetch("https://api.openai.com/v1/chat/completions", {
          method: "POST",
@@ -340,48 +354,53 @@ router.post("/submit-coding-answer", authenticateJWT, async (req, res) => {
    const openaiApiKey = process.env.OPENAI_API_KEY;
    if (!openaiApiKey) throw new Error("OpenAI API key not configured");
 
-   const evaluationPrompt = `You are an expert interviewer. Evaluate the following candidate's solution to a Data Structures & Algorithms (DSA) coding question.
+const evaluationPrompt = `
+You are an expert technical interviewer. Evaluate the candidate's solution to the following Data Structures & Algorithms (DSA) coding question.
 
-Question: ${questionText},
-Candidate's Code Answer: "${updatedQuestion.userAnswer}",
+Question: ${questionText}
+Candidate's Code Answer: "${updatedQuestion.userAnswer}"
 
-Job Role: ${jobRole},
+Job Role: ${jobRole}
 Experience Level: ${experienceLevel}
 
-Evaluation criteria (weight in parentheses):
-1. CORRECTNESS (40%) – Does the code solve the problem as stated? Does it handle edge cases? Are results accurate?
-2. EFFICIENCY (20%) – Time and space complexity. Does the candidate choose an optimal or near-optimal approach?
-3. CODE QUALITY (20%) – Readability, structure, naming, modularity, maintainability, use of language idioms.
-4. PROBLEM-SOLVING EXPLANATION (20%) – Clarity of reasoning behind the approach (if inferred from code), evidence of systematic thinking.
+Evaluation Criteria (with weights):
+1. CORRECTNESS (40%) – Does the code solve the problem as stated? Are edge cases handled? Are results accurate?
+2. EFFICIENCY (20%) – Time and space complexity. Is the approach optimal or near-optimal?
+3. CODE QUALITY (20%) – Readability, naming, structure, modularity, maintainability, and proper use of language idioms.
+4. PROBLEM-SOLVING EXPLANATION (20%) – Clarity of reasoning inferred from the code, and evidence of systematic thinking.
 
-Return JSON:
+Return **strictly** the following JSON structure:
+
 {
-  "score": 0-10 (integer),
-  "feedback": "<html> 
+  "score": 0-10, // integer based on weighted criteria
+  "feedback": "<html>
     <h3>Evaluation</h3>
     <ul>
-      <li>Correctness: .../40%</li>
-      <li>Efficiency: .../20%</li>
-      <li>Code Quality: .../20%</li>
-      <li>Problem-Solving Explanation: .../20%</li>
+      <li>Correctness: ... / 40%</li>
+      <li>Efficiency: ... / 20%</li>
+      <li>Code Quality: ... / 20%</li>
+      <li>Problem-Solving Explanation: ... / 20%</li>
     </ul>
     <h3>Improvements</h3>
-    <p>List specific improvements the candidate could make.</p>
+    <p>Specific, actionable improvements the candidate can make.</p>
     <h3>Example Test Cases</h3>
     <ul>
       <li>Input: ... → Output: ...</li>
       <li>Input: ... → Output: ...</li>
     </ul>
     <h3>Model Solution</h3>
-    <pre><code>// Provide an improved or correct version of the code here</code></pre>
+    <pre><code>// Provide an improved or corrected version of the code here</code></pre>
   </html>"
 }
 
 Guidelines:
-- Score must be an integer 0–10 based on the weighted criteria.
-- Feedback must be in HTML format (structured, copy-paste friendly).
-- Always include at least 2 test cases in the feedback.
-- Provide a corrected/optimized model solution (same language as candidate code if possible).`;
+- Score must be an integer from 0–10 based on the weighted criteria.
+- Feedback must be in valid HTML, structured and copy-paste ready.
+- Include at least **2 test cases** with input and expected output.
+- Provide a corrected/optimized model solution in the **same programming language** as the candidate code.
+- Keep all JSON fields strictly valid; no extra text outside the JSON.
+- Be concise, professional, and actionable in your feedback.
+`;
 
    const evalRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",

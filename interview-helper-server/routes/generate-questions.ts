@@ -86,35 +86,49 @@ router.post("/:sessionId", authenticateJWT, async (req: Request, res: Response) 
 
       console.log(`Generating ${ session.totalQuestions} questions for:`, { jobRole, experienceLevel, resumeContent: resumeContent ? "Provided" : "Not provided", jobDescription: session.jobDescription });
       // Create prompt
-const liveCodingPrompt = `Generate ${session.totalQuestions} live coding DSA(FAANG Style) interview questions for a ${jobRole} position with ${experienceLevel} experience level.
+const liveCodingPrompt = `
+Generate a set of ${session.totalQuestions} live coding DSA questions for a ${jobRole} position with ${experienceLevel} experience level.
 
 Resume context: ${resumeContent || "No resume provided"}
 
 Job Description: ${session.jobDescription || "No description provided"}
 
-Return a JSON array with this structure:
+Return the output strictly as a JSON array, where each object follows this structure:
+
 [
   {
     "question_text": "Implement a function that reverses a linked list.",
     "question_type": "live_coding",
     "tips": [
-      "Input: [1,2,3,4] → Output: [4,3,2,1]",
-      "Input: [] → Output: []",
-      "Constraints: O(n) time, O(1) space",
-      "Hint: Think about pointers, iterative vs recursive"
+      "Sample Input/Output: [1,2,3,4] → [4,3,2,1]",
+      "Sample Input/Output: [] → []",
+      "Constraints: Must run in O(n) time and O(1) space",
+      "Hint: Consider iterative and recursive approaches, and pointer manipulation"
     ],
-    "timeLimit": 900,
+    "timeLimit": 900,          // in seconds
     "order_index": 1
   }
 ]
 
-Guidelines:
-- Keep the structure consistent with question_text, question_type, tips, timeLimit, order_index.
-- Use 'live_coding' as the question_type.
-- Place sample inputs/outputs (test cases), constraints, and hints inside the tips array.
-- Make questions relevant to ${jobRole} and ${experienceLevel}.
-- Vary difficulty (easy, medium, hard).
-- Ensure each question has at least 2 test cases in tips.;`;
+Guidelines for generating questions:
+1. Always use 'live_coding' as the question_type.
+2. Include at least 2 sample inputs and outputs per question inside the tips array.
+3. Include constraints and hints in tips for guidance.
+4. Questions should vary in difficulty (easy, medium, hard).
+5. Ensure relevance to ${jobRole} and ${experienceLevel} level.
+6. Include a mix of problem types: arrays, strings, linked lists, trees, graphs, dynamic programming, etc.
+7. Number questions sequentially in order_index, starting at 1.
+8. Keep JSON strictly valid, with no extra text outside the array.
+
+Example tips array format:
+[
+  "Input: [1,2,3,4] → Output: [4,3,2,1]",
+  "Input: [] → Output: []",
+  "Constraints: O(n) time, O(1) space",
+  "Hint: Think about iterative vs recursive pointer manipulation"
+]
+`;  
+
 
 const mixedInterviewPrompt = `Generate **exactly ${session.totalQuestions}** interview questions for a ${jobRole} position with ${experienceLevel} experience level.
 
