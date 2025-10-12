@@ -6,3 +6,8 @@
 [build.environment]
   NODE_VERSION = "18"
   NETLIFY_NEXT_PLUGIN_SKIP = "true" # 🚀 tells Netlify to skip Next.js detection
+
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200
