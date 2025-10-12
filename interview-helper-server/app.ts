@@ -30,7 +30,7 @@ app.set('view engine', 'jade');
 setupSwagger(app);
 
 // middleware
-app.use(
+/* app.use(
   cors({
     origin: [
       "http://localhost:8080",
@@ -42,6 +42,32 @@ app.use(
     credentials: true,
   })
 );
+ */
+// List of allowed frontend origins
+const allowedOrigins = [
+  "http://localhost:8080",
+      "http://13.217.253.74:8080",
+      "https://ec2-13-217-253-74.compute-1.amazonaws.com",
+      "https://interview-sim.netlify.app"
+];
+
+// CORS middleware
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // allow server-to-server requests (Postman, curl)
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // allow cookies/auth headers
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+// Handle preflight OPTIONS requests
+app.options("*", cors());
 
 app.use(logger('dev') as unknown as RequestHandler);
 app.use(express.json());
