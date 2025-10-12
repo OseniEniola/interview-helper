@@ -48,7 +48,7 @@ const allowedOrigins = [
   "http://localhost:8080",
       "http://13.217.253.74:8080",
       "https://ec2-13-217-253-74.compute-1.amazonaws.com",
-      "https://interview-sim.netlify.app"
+      //"https://interview-sim.netlify.app"
 ];
 
 // CORS middleware
