@@ -61,7 +61,7 @@ export function InterviewDashboard() {
                 onToggleVideo={() => setIsVideoOn(!isVideoOn)}
               />
 
-              <div className='mt-6'>
+              <div id='feedback-section' className='mt-6'>
                 <AiFeedBack />
               </div>
             </div>

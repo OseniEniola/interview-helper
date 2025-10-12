@@ -125,6 +125,12 @@ export function QuestionPanel({ onNext, editorContent, numOfGenQuestions, isLast
          if (question.aiFeedback) {
             setFeedback({ score: question.score, feedback: question.aiFeedback });
             setHasSubmitted(true);
+            setTimeout(() => {
+               const element = document.getElementById("feedback-section");
+               if (element) {
+                  element.scrollIntoView({ behavior: "smooth" });
+               }
+            }, 1200);
          }
       }
    }, [currentQuestion, question]);
@@ -172,7 +178,7 @@ export function QuestionPanel({ onNext, editorContent, numOfGenQuestions, isLast
          setAnswer("");
          setFeedback(null);
          setHasSubmitted(false);
-         setFollowupQuestion("")
+         setFollowupQuestion("");
          onNext();
       } else {
          navigate("/buy-me-coffee");
