@@ -32,11 +32,17 @@ setupSwagger(app);
 // middleware
 app.use(
   cors({
-    origin: ["http://localhost:8080","http://13.217.253.74:8080,https://ec2-13-217-253-74.compute-1.amazonaws.com,https://interview-sim.netlify.app"],
+    origin: [
+      "http://localhost:8080",
+      "http://13.217.253.74:8080",
+      "https://ec2-13-217-253-74.compute-1.amazonaws.com",
+      "https://interview-sim.netlify.app"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
+
 app.use(logger('dev') as unknown as RequestHandler);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
