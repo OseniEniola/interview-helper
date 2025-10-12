@@ -58,7 +58,7 @@ export class InterviewService {
    //Login user
    static async login(email: string, password: string): Promise<any> {
       try {
-         const { data } = await axiosClient.post(`${baseUrl}/auth/login`, { email, password });
+         const { data } = await axiosClient.post(`${baseUrl}/auth/login`, { email, password },{ withCredentials: true });
          localStorage.setItem("userData", JSON.stringify(data));
          return { data };
       } catch (error: any) {
