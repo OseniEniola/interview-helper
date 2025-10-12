@@ -30,17 +30,17 @@ export function InterviewDashboard() {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Header */}
-        <div className="bg-white border-b px-6 py-4">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="bg-white border-b px-6 py-4 max-md:px-3">
+          <div className="max-w-7xl mx-auto flex items-center justify-between max-md:flex-wrap max-md:justify-center max-md:gap-3 max-md:flex-row">
+            <div className="flex items-center gap-4 ">
               <a href='/interview/sessions' className={'flex items-center font-semibold justify-center shadow cursor-pointer p-2 rounded-sm gap-2 text-sm'}><BackIcon width={16} height={16}/> <span>View sessions</span></a>
-              <h1 className="text-xl font-semibold">AI Interview Session</h1>
+              <h1 className="text-xl font-semibold max-md:hidden">AI Interview Session</h1>
               <Badge variant="secondary" className="bg-green-100 text-green-800">
                 Live
               </Badge>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 max-md:mt-4">
               <div className="text-sm text-gray-600">
                 Question {currentQuestionIndex + 1} of {questions.length}
               </div>
@@ -50,7 +50,7 @@ export function InterviewDashboard() {
         </div>
 
         {/* Main Interview Area */}
-        <div className="max-w-7xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto p-6 max-md:px-3">
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Video Section */}
             <div className="lg:col-span-2">

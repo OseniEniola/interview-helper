@@ -56,9 +56,9 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
    return (
       <div className="min-h-screen">
          <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-14 items-center justify-between">
+            <div className="container flex h-14 items-center justify-between max-md:flex-col max-md:mt-4 max-md:h-auto max-md:pb-5">
                <h1 className="text-lg font-semibold">AI Interview Platform</h1>
-               <div className="flex items-center gap-4">
+               <div className="flex items-center gap-4 max-md:flex-wrap">
                  <a href="/buy-me-coffee"> <Button variant="outline" size="sm">
                    <i className="fa-solid fa-mug-hot  text-amber-800"></i> Buy me a coffee
                   </Button></a>
@@ -74,7 +74,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
                </div>
             </div>
          </header>
-         <main className="container py-6">{children}</main>
+         <main className="container py-6 max-md:py-2 max-md:px-2">{children}</main>
       </div>
    );
 };

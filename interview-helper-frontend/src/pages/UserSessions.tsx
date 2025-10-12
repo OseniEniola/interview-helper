@@ -39,9 +39,9 @@ export const UserSessions = () => {
          {userSessions.length === 0 ? (
             <p>No sessions found. Create a new session to get started!</p>
          ) : (
-            <ul className=" w-[80%] flex flex-wrap gap-4 justify-between overflow-y-auto">
+            <ul className=" w-[80%] flex flex-wrap gap-4 justify-between overflow-y-auto max-md:w-full">
                {userSessions.map((session) => (
-                  <li key={session.id} className="p-4 border w-[48.5%] bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                  <li key={session.id} className="p-4 border w-[48.5%] bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow max-md:w-full">
                      <h2 className="text-xl font-semibold">{session.title}</h2>
                      <p className="text-gray-600 font-bold">Role: {session.job_role}</p>
                      <p className="text-gray-600">Experience Level: {session.experience_level}</p>

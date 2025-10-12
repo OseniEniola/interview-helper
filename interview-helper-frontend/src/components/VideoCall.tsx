@@ -46,9 +46,9 @@ export function VideoCall({ isMuted, isVideoOn, onToggleMute, onToggleVideo }: V
   return (
     <div className="space-y-4">
       {/* Main Video Area */}
-      <Card className="border-0 shadow-video overflow-hidden">
+      <Card className="border-0 shadow-video overflow-hidden  ">
         <CardContent className="p-0">
-          <div className="relative bg-gradient-to-br from-secondary/20 to-accent/20 aspect-video">
+          <div className="relative bg-gradient-to-br from-secondary/20 to-accent/20 aspect-video max-md:h-[50vh] max-md:w-[95vw]">
             {/* AI Interviewer Section */}
             <div className="absolute top-4 left-4 right-4 bg-card/90 backdrop-blur-sm rounded-lg p-4">
               <div className="flex items-center gap-3">
