@@ -1,11 +1,11 @@
 [build]
   base = "interview-helper-frontend"
-  command = "npm install && npm run build"
-  publish = "interview-helper-frontend/.next"
+  publish = "dist"
+  command = "npm run build"
 
 [build.environment]
   NODE_VERSION = "18"
-  NEXT_TELEMETRY_DISABLED = "1"
+  NETLIFY_NEXT_PLUGIN_SKIP = "true" # 🚀 tells Netlify to skip Next.js detection
 
 [[plugins]]
-  package = "@netlify/plugin-nextjs"
+  package = "@netlify/plugin-inline-functions-env"
