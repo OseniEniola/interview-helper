@@ -3,7 +3,7 @@ FROM node:20-alpine AS builder
 WORKDIR /usr/src/backend
 
 # Copy dependency files and install
-COPY ./package.json interview-helper-server/package-lock.json ./
+COPY ./package.json ./package-lock.json ./
 RUN npm ci --silent
 
 # Copy rest of source
