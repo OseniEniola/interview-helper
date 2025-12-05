@@ -1,0 +1,45 @@
+databases:
+  - name: interview-helper-db
+    plan: free
+    postgresMajorVersion: 15
+
+services:
+  - name: backend
+    type: web
+    env: docker
+    plan: free
+    rootDirectory: interview-helper-server
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: interview-helper-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+    autoDeploy: true
+
+  - name: frontend
+    type: web
+    env: docker
+    plan: free
+    rootDirectory: interview-helper-frontend
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        value: https://backend.onrender.com
+    autoDeploy: true
+
+  - name: pgadmin
+    type: web
+    env: docker
+    plan: free
+    rootDirectory: pgadmin
+    envVars:
+      - key: PGADMIN_DEFAULT_EMAIL
+        value: admin@admin.com
+      - key: PGADMIN_DEFAULT_PASSWORD
+        value: admin
+      - key: PGADMIN_SERVER_MODE
+        value: "True"
+      - key: PGADMIN_LISTEN_PORT
+        value: "80"
+    autoDeploy: false
