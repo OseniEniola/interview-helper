@@ -8,7 +8,7 @@ services:
     type: web
     env: docker
     plan: free
-    rootDirectory: interview-helper-server
+    rootDirectory: ./interview-helper-server
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -22,7 +22,7 @@ services:
     type: web
     env: docker
     plan: free
-    rootDirectory: interview-helper-frontend
+    rootDirectory: ./interview-helper-frontend
     envVars:
       - key: REACT_APP_BACKEND_URL
         value: https://backend.onrender.com
@@ -32,7 +32,7 @@ services:
     type: web
     env: docker
     plan: free
-    rootDirectory: pgadmin
+    rootDirectory: ./pgadmin
     envVars:
       - key: PGADMIN_DEFAULT_EMAIL
         value: admin@admin.com
