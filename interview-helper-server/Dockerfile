@@ -3,11 +3,11 @@ FROM node:20-alpine AS builder
 WORKDIR /usr/src/backend
 
 # Copy dependency files and install
-COPY interview-helper-server/package.json interview-helper-server/package-lock.json ./
+COPY ./package.json interview-helper-server/package-lock.json ./
 RUN npm ci --silent
 
 # Copy rest of source
-COPY interview-helper-server/ ./
+COPY ./ ./
 
 # Generate prisma client
 RUN npx prisma generate
